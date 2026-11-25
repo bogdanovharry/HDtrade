@@ -2,6 +2,9 @@
 """Generates the static HD Trade website.  Run:  python3 _build/build.py
 Shared header / footer / icons live here so every page stays consistent."""
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from house import house_section
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -420,6 +423,8 @@ def build_home():
   </div>
 </section>
 
+{house_section(ico, ARROW)}
+
 <section class="section section--off section--tight" aria-labelledby="how-title">
   <div class="container">
     <span class="eyebrow">Как работим</span>
@@ -445,18 +450,20 @@ def build_home():
 </section>
 {CTA_BAND}'''
     page("index.html", "HD Trade — Интелигентни решения за комфорт и климат",
-         "Доставка, професионален монтаж и обслужване на VRV/VRF системи, вентилация, сплит-системи и термопомпи въздух-вода. Габрово.", body)
+         "Доставка, професионален монтаж и обслужване на VRV/VRF системи, вентилация, сплит-системи и термопомпи въздух-вода. Габрово.", body,
+         scripts=("house.js",))
 
 # ================================================================= SOLUTIONS OVERVIEW
 def build_solutions():
     body = page_hero(crumb((None, "Решения")), "Нашите решения", "Решения за всеки тип пространство.",
         "Внасяме и монтираме професионални системи за климатизация, вентилация и отопление — за дома, офиса и търговските обекти.", "banner.jpg") + f'''
 <section class="section"><div class="container"><div class="cards">{cards()}</div></div></section>
+{house_section(ico, ARROW)}
 <section class="section section--off section--tight"><div class="container">
   <span class="eyebrow">Как работим</span><h2 class="h2" style="margin-bottom:40px">От запитване до готово решение.</h2>
   <ol class="steps">{steps()}</ol></div></section>
 {CTA_BAND}'''
-    page("reshenia.html", "Решения — HD Trade", "VRV/VRF климатизация, вентилация с рекуперация, професионални сплит-системи и термопомпи въздух-вода.", body)
+    page("reshenia.html", "Решения — HD Trade", "VRV/VRF климатизация, вентилация с рекуперация, професионални сплит-системи и термопомпи въздух-вода.", body, scripts=("house.js",))
 
 # ================================================================= SOLUTION DETAIL PAGES
 DETAIL = {

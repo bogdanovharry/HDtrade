@@ -740,3 +740,102 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Form controls don't inherit font settings by default — keep the same letterforms everywhere */
 *, *::before, *::after { font-feature-settings: "locl" 0 !important; }  /* `font:` shorthand would reset it otherwise */
 .btn--outline { background: transparent; }
+
+/* =========================================================
+   Interactive cutaway house — "Коя система къде?"
+   ========================================================= */
+.house { --bp: rgba(255,255,255,.5); --bp-thin: rgba(255,255,255,.22); --hot: #F2A900; --cold: #7DB0F2; --fresh: #BFDBFF;
+  position: relative; isolation: isolate; overflow: hidden; color: rgba(255,255,255,.8); padding-block: var(--section);
+  background:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(800px 420px at 70% 40%, rgba(63,123,212,.25), transparent 70%),
+    var(--hero); }
+.house h2, .house h3 { color: #fff; }
+.house-head { display: flex; justify-content: space-between; align-items: end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: 36px; }
+.house-head p { max-width: 42ch; color: rgba(255,255,255,.7); }
+.house-grid { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+@media (max-width: 960px) { .house-grid { grid-template-columns: 1fr; } }
+
+/* drawing */
+.house-stage { position: relative; aspect-ratio: 1000 / 600; max-width: 100%; }
+.house-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+.house-svg * { vector-effect: non-scaling-stroke; }
+.hs-struct { fill: none; stroke: var(--bp); stroke-width: 1.4; stroke-linejoin: round; }
+.hs-struct .hs-thin, .hs-thin { stroke: var(--bp-thin); stroke-width: 1; fill: none; }
+.hs-soil { fill: rgba(255,255,255,.03); stroke: none; }
+.hs-hatch { stroke: var(--bp-thin); }
+.hs-slab { fill: rgba(255,255,255,.04); }
+.hs-win { fill: rgba(125,176,242,.08); }
+
+.hs-sys { opacity: .58; transition: opacity .35s var(--ease); fill: none; stroke: var(--bp); stroke-width: 1.4; }
+.hs-sys.is-active { opacity: 1; }
+.hs-unit { fill: rgba(255,255,255,.06); stroke: #fff; stroke-width: 1.5; }
+.hs-sys.is-active .hs-unit { fill: rgba(242,169,0,.12); stroke: var(--hot); }
+.hs-ring { stroke: #fff; }
+.hs-fan path { fill: rgba(255,255,255,.55); stroke: none; }
+.hs-led { fill: var(--hot); stroke: none; }
+.hs-coil { stroke: var(--hot); stroke-width: 1.2; }
+.hs-pipe { stroke-width: 3; stroke-linecap: round; }
+.hs-pipe--hot { stroke: var(--hot); }
+.hs-pipe--cold { stroke: var(--cold); }
+.hs-duct { stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.hs-duct--fresh { stroke: rgba(191,219,255,.75); }
+.hs-duct--stale { stroke: rgba(255,255,255,.3); }
+.hs-rise { stroke: var(--hot); stroke-width: 1.4; stroke-linecap: round; opacity: .7; }
+.hs-air { stroke: var(--fresh); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 10 14; }
+.hs-wifi { stroke: var(--hot); stroke-linecap: round; }
+.hs-link { stroke: var(--hot); stroke-width: 1; stroke-dasharray: 2 6; opacity: 0; transition: opacity .35s; }
+.hs-sys.is-active .hs-link { opacity: .8; }
+
+/* motion: only the active system moves (cheap on phones) */
+.hs-flow { stroke-dasharray: 10 8; }
+.hs-sys.is-active .hs-flow { animation: hs-flow 1.1s linear infinite; }
+.hs-sys.is-active .hs-flow--rev { animation-direction: reverse; }
+.hs-duct.hs-flow { stroke-dasharray: 14 10; }
+.hs-sys.is-active .hs-air { animation: hs-flow 1s linear infinite; }
+.hs-sys.is-active .hs-rise { animation: hs-rise 2.4s ease-in-out infinite; }
+.hs-sys.is-active .hs-rise:nth-of-type(2n) { animation-delay: -1.2s; }
+.hs-sys.is-active .hs-fan { animation: hs-spin 1.6s linear infinite; transform-box: view-box; }
+.hs-sys.is-active .hs-wifi { animation: hs-blink 1.6s ease-in-out infinite; }
+@keyframes hs-flow { to { stroke-dashoffset: -36; } }
+@keyframes hs-rise { 0% { opacity: 0; transform: translateY(6px); } 50% { opacity: .8; } 100% { opacity: 0; transform: translateY(-10px); } }
+@keyframes hs-spin { to { transform: rotate(360deg); } }
+@keyframes hs-blink { 50% { opacity: .3; } }
+
+/* hotspots */
+.house-spot { position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 50%; padding: 0; cursor: pointer;
+  border: 2px solid #fff; background: var(--hero); color: #fff; font: 700 .8rem/1 var(--mono); display: grid; place-items: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,.35); transition: background .2s, color .2s, border-color .2s, transform .2s; }
+.house-spot::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 2px solid var(--hot); opacity: 0; }
+.house-spot:hover { transform: translate(-50%, -50%) scale(1.1); }
+.house-spot.is-active { background: var(--hot); border-color: var(--hot); color: var(--hero); }
+.house-spot.is-active::after { animation: pulse 2.2s var(--ease) infinite; }
+@media (max-width: 560px) { .house-spot { width: 28px; height: 28px; font-size: .72rem; } }
+
+/* info panel */
+.house-panel { display: grid; gap: 20px; min-width: 0; }
+.house-infos { min-height: 270px; }
+.house-info { padding: 26px; border-radius: var(--radius-lg); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14);
+  animation: house-in .35s var(--ease); }
+.house-info__n { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--hot); }
+.house-info h3 { font-size: 1.5rem; margin: 8px 0 10px; }
+.house-info p { font-size: var(--fs-sm); line-height: 1.7; }
+.house-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
+.house-chips li { font-size: var(--fs-xs); font-weight: 700; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.22); color: #fff; }
+.house-info__links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+@keyframes house-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.house-tabs { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.house-tab { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; cursor: pointer;
+  font: 600 var(--fs-sm) var(--font); color: rgba(255,255,255,.72); text-align: left; transition: background .2s, color .2s; }
+.house-tab span { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.4); display: grid; place-items: center; font: 600 .7rem var(--mono); flex-shrink: 0; }
+.house-tab:hover { background: rgba(255,255,255,.06); color: #fff; }
+.house-tab.is-active { background: rgba(255,255,255,.1); color: #fff; }
+.house-tab.is-active span { background: var(--hot); border-color: var(--hot); color: var(--hero); }
+@media (max-width: 960px) {
+  .house-infos { min-height: 0; }
+  .house-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .house *, .house *::after { animation: none !important; }
+}
