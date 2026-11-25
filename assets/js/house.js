@@ -1,5 +1,5 @@
 /* Interactive cutaway house — "Коя система къде?"
-   Hover (mouse) or tap/focus a hotspot or tab to show that system. */
+   Click/tap a hotspot or tab (or use the arrow keys) to show that system. */
 (function () {
   document.querySelectorAll('.house').forEach(function (house) {
     var stage = house.querySelector('.house-stage');
@@ -21,17 +21,6 @@
       var b = e.target.closest('.house-spot, .house-tab'); if (!b) return;
       pinned = b.dataset.sys; show(pinned);
     });
-    house.addEventListener('focusin', function (e) {
-      var b = e.target.closest('.house-spot, .house-tab'); if (b) show(b.dataset.sys);
-    });
-    // mouse only: preview on hover, return to the pinned system on leave
-    if (window.matchMedia('(hover: hover)').matches) {
-      house.querySelectorAll('.house-spot, .house-tab').forEach(function (b) {
-        b.addEventListener('mouseenter', function () { show(b.dataset.sys); });
-      });
-      stage.addEventListener('mouseleave', function () { show(pinned); });
-      house.querySelector('.house-tabs').addEventListener('mouseleave', function () { show(pinned); });
-    }
     // arrow keys move between systems
     house.addEventListener('keydown', function (e) {
       if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
@@ -40,7 +29,7 @@
       var next = order[(i + order.length) % order.length];
       var sel = b.classList.contains('house-tab') ? '.house-tab' : '.house-spot';
       house.querySelector(sel + '[data-sys="' + next + '"]').focus();
-      pinned = next; e.preventDefault();
+      pinned = next; show(next); e.preventDefault();
     });
     show(pinned);
   });
