@@ -70,6 +70,8 @@
     var params = new URLSearchParams(location.search);
     var pre = params.get('s');
     if (pre) { var r = form.querySelector('input[name="system"][value="' + pre + '"]'); if (r) r.checked = true; }
+    var preMsg = params.get('msg');
+    if (preMsg) { var ta = form.querySelector('textarea[name="message"]'); if (ta && !ta.value) ta.value = preMsg; }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!form.reportValidity()) return;

@@ -1,0 +1,9 @@
+{
+  "name": "hdtrade-site",
+  "private": true,
+  "description": "HD Trade website — static pages and the HVAC sizing calculator",
+  "scripts": {
+    "build": "python3 _build/build.py",
+    "test": "node --test tests/*.test.js"
+  }
+}

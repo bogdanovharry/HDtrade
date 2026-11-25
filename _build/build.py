@@ -67,6 +67,7 @@ NAV = [
  ("index.html", "Начало"),
  ("reshenia.html", "Решения"),
  ("proekti.html", "Проекти"),
+ ("kalkulator.html", "Калкулатор"),
  ("za-nas.html", "За нас"),
  ("kontakti.html", "Контакти"),
 ]
@@ -132,6 +133,7 @@ def footer():
     <div><h4>Компания</h4><ul>
       <li><a href="za-nas.html">За нас</a></li>
       <li><a href="proekti.html">Проекти</a></li>
+      <li><a href="kalkulator.html">Калкулатор за мощност</a></li>
       <li><a href="ceni-montazh.html">Цени за монтаж</a></li>
       <li><a href="oferta.html">Поискай оферта</a></li>
       <li><a href="kontakti.html">Контакти</a></li></ul></div>
@@ -146,7 +148,7 @@ def footer():
   </div>
 </footer>'''
 
-def page(fname, title, desc, body, active=None):
+def page(fname, title, desc, body, active=None, scripts=()):
     html = f'''<!doctype html>
 <html lang="bg">
 <head>
@@ -167,7 +169,7 @@ def page(fname, title, desc, body, active=None):
 {body}
 </main>
 {footer()}
-<script src="assets/js/main.js" defer></script>
+<script src="assets/js/main.js" defer></script>{"".join(f'<script src="assets/js/{s}" defer></script>' for s in scripts)}
 </body>
 </html>
 '''
@@ -197,6 +199,7 @@ def aside(current):
         f'<a href="{s["slug"]}.html"{" aria-current=\"page\"" if s["slug"] == current else ""}>{s["title"]} {ico("right")}</a>' for s in SOL)
     s = next((x for x in SOL if x["slug"] == current), None)
     q = f'?s={s["s"]}' if s else ""
+    calc = {"vrv-vrf": "building", "ventilacia": "vent", "klimatici": "split", "termopompi": "heatpump"}.get(current, "")
     return f'''<aside class="aside">
   <div class="aside-card">
     <h3>Поискайте оферта</h3>
@@ -204,6 +207,7 @@ def aside(current):
     <a class="btn btn--primary" href="oferta.html{q}">Поискай оферта {ARROW}</a>
     <a class="btn btn--ghost-light" href="{PHONE_HREF}">{ico("phone")} {PHONE}</a>
   </div>
+  <a class="aside-calc" href="kalkulator.html{"#" + calc if calc else ""}">{ico("gauge")}<span><strong>Каква мощност ви трябва?</strong><small>Изчислете за 1 минута с калкулатора</small></span>{ico("right")}</a>
   <nav class="aside-nav" aria-label="Решения"><h4>Нашите решения</h4>{links}</nav>
 </aside>'''
 
@@ -397,6 +401,10 @@ def build_home():
       <a class="link-arrow" href="reshenia.html">Виж всички решения {ico("arrow")}</a>
     </div>
     <div class="cards">{cards()}</div>
+    <div class="calc-teaser reveal">
+      <div class="calc-teaser__text">{ico("gauge")}<div><h3>Не знаете каква мощност ви трябва?</h3><p>Отговорете на няколко въпроса и вижте ориентировъчна препоръка и цена за монтаж.</p></div></div>
+      <a class="btn btn--outline" href="kalkulator.html">Към калкулатора {ARROW}</a>
+    </div>
   </div>
 </section>
 
@@ -668,7 +676,23 @@ def build_offer():
 </div></section>'''
     page("oferta.html", "Поискай оферта — HD Trade", "Изпратете запитване за оферта за климатизация, вентилация или термопомпа.", body, "oferta.html")
 
+# ================================================================= CALCULATOR
+def build_calculator():
+    body = page_hero(crumb((None, "Калкулатор")), "Калкулатор", "Каква мощност ви трябва?",
+        "Отговорете на няколко въпроса и вижте ориентировъчна препоръка за климатик, термопомпа или вентилация — с цена за монтаж.",
+        "thermostat.jpg") + f'''
+<section class="section"><div class="container">
+  <div class="calc" id="calc">
+    <noscript><p>Калкулаторът изисква JavaScript. Можете да <a href="oferta.html">изпратите запитване</a> или да се обадите на {PHONE}.</p></noscript>
+  </div>
+  <p class="note" style="max-width:920px;margin:28px auto 0">Изчислението е ориентировъчно и се базира на общоприети инженерни правила. Точната мощност и моделът се определят след безплатен оглед на обекта. Цените за монтаж са без ДДС.</p>
+</div></section>
+{CTA_BAND}'''
+    page("kalkulator.html", "Калкулатор за мощност — HD Trade",
+         "Изчислете ориентировъчно каква мощност климатик, термопомпа или рекуператор ви трябва — според площта, изолацията, етажа и изложението.",
+         body, scripts=("calc.js", "calculator.js"))
+
 if __name__ == "__main__":
     build_home(); build_solutions(); build_details(); build_prices()
-    build_projects(); build_about(); build_contact(); build_offer()
+    build_projects(); build_about(); build_contact(); build_offer(); build_calculator()
     print("built:", sorted(p.name for p in ROOT.glob("*.html")))
